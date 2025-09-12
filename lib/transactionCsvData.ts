@@ -1,4 +1,4 @@
-export interface TransactionRow {
+export interface TransactionCsvData {
     Date: string;
     From: string;
     To: string;

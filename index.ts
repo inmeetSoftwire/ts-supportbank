@@ -1,18 +1,17 @@
 import { readFileSync } from "fs";
 import { parse } from "csv-parse/sync"
-import {parse as parseDate, format} from "date-fns"
 import { question } from "readline-sync"
 import { Transaction } from "./lib/transaction.js";
 import { Account } from "./lib/account.js";
-import { TransactionRow } from "./lib/TransactionRow.js";
-
+import { TransactionCsvData } from "./lib/TransactionRow.js";
+import { parseDate, formatDate } from "./lib/dateHelper.js";
 
 function loadTransactions(filePath: string) {
     const data = readFileSync(filePath, "utf8");
-    const records: TransactionRow[] = parse(data, {columns: true, skip_empty_lines: true});
+    const records: TransactionCsvData[] = parse(data, {columns: true, skip_empty_lines: true});
     const transactions: Transaction[] = [];
     for (const row of records) {
-        const date: Date = parseDate(row.Date, "dd/MM/yyyy", new Date())
+        const date: Date = parseDate(row.Date);
         const narrative: string = row.Narrative;
         const from: string = row.From;
         const to: string = row.To;
@@ -52,7 +51,7 @@ function displayTransactionsOfAccount(transactions: Transaction[], accountName: 
     console.log(`\n=== Transactions of ${accountName} ===`);
     for (const transaction of transactions) {
         if (transaction.from == accountName || transaction.to == accountName) {
-            console.log(`${format(transaction.date,"EEE MMM dd yyyy")} | From: ${transaction.from} | To: ${transaction.to} | ${transaction.narrative} | £${transaction.amount.toFixed(2)}`)
+            console.log(`${formatDate(transaction.date)} | From: ${transaction.from} | To: ${transaction.to} | ${transaction.narrative} | £${transaction.amount.toFixed(2)}`)
         }
     }
 }
