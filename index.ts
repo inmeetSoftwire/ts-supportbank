@@ -3,36 +3,9 @@ import { parse } from "csv-parse/sync"
 import {parse as parseDate, format} from "date-fns"
 import { question } from "readline-sync"
 import { Transaction } from "./lib/transaction.js";
+import { Account } from "./lib/account.js";
+import { TransactionRow } from "./lib/TransactionRow.js";
 
-
-class Account {
-    name: string;
-    balance: number;
-    transactions: Transaction[];
-
-    constructor(name: string) {
-        this.name = name;
-        this.balance = 0;
-        this.transactions = [];
-    }
-
-    applyTransaction(transaction: Transaction, isSender: boolean): void {
-        if (isSender) {
-            this.balance -= transaction.amount;
-        } else {
-            this.balance += transaction.amount;
-        }
-        this.transactions.push(transaction);
-    }
-}
-
-interface TransactionRow {
-    Date: string;
-    From: string;
-    To: string;
-    Narrative: string;
-    Amount: string;
-}
 
 function loadTransactions(filePath: string) {
     const data = readFileSync(filePath, "utf8");
