@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import { parse } from "csv-parse/sync"
-import {parse as parseDate} from "date-fns"
+import {parse as parseDate, format} from "date-fns"
+import { question } from "readline-sync"
 
 class Transaction {
     date: Date;
@@ -50,8 +51,7 @@ interface TransactionRow {
 function loadTransactions(filePath: string) {
     const data = fs.readFileSync(filePath, "utf8");
     const records: TransactionRow[] = parse(data, {columns: true, skip_empty_lines: true});
-    const accounts = new Map<string, Account>();
-
+    const transactions: Transaction[] = [];
     for (const row of records) {
         const date: Date = parseDate(row.Date, "dd/MM/yyyy", new Date())
         const narrative: string = row.Narrative;
@@ -60,12 +60,58 @@ function loadTransactions(filePath: string) {
         const amount: number = parseFloat(row.Amount);
 
         const transaction = new Transaction(date, narrative, from, to, amount);
+        transactions.push(transaction);
+    }
+    return transactions;
+}
 
+
+function computeAccountBalances(transactions: Transaction[]) {
+    const accounts = new Map<string, Account>();
+    for (const transaction of transactions) {
+        const from: string = transaction.from
+        const to: string = transaction.to
         if (!accounts.has(from)) accounts.set(from, new Account(from));
         if (!accounts.has(to)) accounts.set(to, new Account(to));
 
         accounts.get(from)!.applyTransaction(transaction, true);
         accounts.get(to)!.applyTransaction(transaction, false);
     }
-    return accounts;
+    return accounts
 }
+function displayAccountBalances(accounts: Map<string, Account>): void {
+    console.log("\n=== Account Balances ===");
+    for (const account of accounts.values()) {
+        console.log(`${account.name}: £${account.balance.toFixed(2)}`);
+    }
+}
+
+function displayTransactionsOfAccount(transactions: Transaction[], accountName: string) {
+    console.log(`\n=== Transactions of ${accountName} ===`);
+    for (const transaction of transactions) {
+        if (transaction.from == accountName || transaction.to == accountName) {
+            console.log(`${format(transaction.date,"EEE MMM dd yyyy")} | From: ${transaction.from} | To: ${transaction.to} | ${transaction.narrative} | £${transaction.amount.toFixed(2)}`)
+        }
+    }
+}
+
+function main(): void {
+    const transactions: Transaction[] = loadTransactions('Transactions2014.csv')
+    let accounts: Map<string, Account> = new Map();
+    while (true) {
+        const command: string = question('Enter your command ("list all", "list [account]" or "exit"): ');
+        if (command.toLowerCase() == "list all") {
+            if (accounts.size == 0) {
+                accounts = computeAccountBalances(transactions);
+            }
+            displayAccountBalances(accounts);
+        } else if (command.toLowerCase().startsWith("list ")) {
+            const accountName: string = command.slice(5, command.length);
+            displayTransactionsOfAccount(transactions, accountName);
+        } else if (command.toLowerCase() == "exit") {
+            break;
+        }
+    }
+}
+
+main()
