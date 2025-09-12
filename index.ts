@@ -3,7 +3,7 @@ import { parse } from "csv-parse/sync"
 import { question } from "readline-sync"
 import { Transaction } from "./lib/transaction.js";
 import { Account } from "./lib/account.js";
-import { TransactionCsvData } from "./lib/TransactionRow.js";
+import { TransactionCsvData } from "./lib/transactionCsvData.js";
 import { parseDate, formatDate } from "./lib/dateHelper.js";
 
 function loadTransactions(filePath: string) {
