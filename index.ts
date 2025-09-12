@@ -2,22 +2,8 @@ import { readFileSync } from "fs";
 import { parse } from "csv-parse/sync"
 import {parse as parseDate, format} from "date-fns"
 import { question } from "readline-sync"
+import { Transaction } from "./lib/transaction.js";
 
-class Transaction {
-    date: Date;
-    narrative: string;
-    from: string;
-    to: string;
-    amount: number;
-
-    constructor(date: Date, narrative: string, from: string, to: string, amount: number) {
-        this.date = date;
-        this.narrative = narrative;
-        this.from = from;
-        this.to = to;
-        this.amount = amount;
-    }
-}
 
 class Account {
     name: string;
@@ -59,7 +45,7 @@ function loadTransactions(filePath: string) {
         const to: string = row.To;
         const amount: number = parseFloat(row.Amount);
 
-        const transaction = new Transaction(date, narrative, from, to, amount);
+        const transaction: Transaction = {date, narrative, from, to, amount};
         transactions.push(transaction);
     }
     return transactions;
