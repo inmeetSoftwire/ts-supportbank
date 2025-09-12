@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import { readFileSync } from "fs";
 import { parse } from "csv-parse/sync"
 import {parse as parseDate, format} from "date-fns"
 import { question } from "readline-sync"
@@ -49,7 +49,7 @@ interface TransactionRow {
 }
 
 function loadTransactions(filePath: string) {
-    const data = fs.readFileSync(filePath, "utf8");
+    const data = readFileSync(filePath, "utf8");
     const records: TransactionRow[] = parse(data, {columns: true, skip_empty_lines: true});
     const transactions: Transaction[] = [];
     for (const row of records) {
