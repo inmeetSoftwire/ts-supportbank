@@ -17,6 +17,7 @@
   "dependencies": {
     "csv-parse": "^6.1.0",
     "date-fns": "^4.1.0",
+    "log4js": "^6.9.1",
     "readline-sync": "^1.4.10"
   },
   "keywords": [],
