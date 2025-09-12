@@ -33,8 +33,11 @@ function computeAccountBalances(transactions: Transaction[]) {
         if (!accounts.has(from)) accounts.set(from, new Account(from));
         if (!accounts.has(to)) accounts.set(to, new Account(to));
 
-        accounts.get(from)!.applyTransaction(transaction, true);
-        accounts.get(to)!.applyTransaction(transaction, false);
+        accounts.get(from)!.applyTransactionToBalance(transaction);
+        accounts.get(from)!.addTransactionToHistory(transaction);
+
+        accounts.get(to)!.applyTransactionToBalance(transaction);
+        accounts.get(to)!.addTransactionToHistory(transaction);
     }
     return accounts
 }

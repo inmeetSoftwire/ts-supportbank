@@ -10,13 +10,16 @@ export class Account {
         this.balance = 0;
         this.transactions = [];
     }
-
-    applyTransaction(transaction: Transaction, isSender: boolean): void {
-        if (isSender) {
+    
+    applyTransactionToBalance(transaction: Transaction): void {
+        if (transaction.from === this.name) {
             this.balance -= transaction.amount;
-        } else {
+        } else if (transaction.to === this.name) {
             this.balance += transaction.amount;
         }
+    }
+
+    addTransactionToHistory(transaction: Transaction): void {
         this.transactions.push(transaction);
     }
 }
