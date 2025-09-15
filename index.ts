@@ -1,14 +1,14 @@
 import { readFileSync } from "fs";
-import { parse } from "csv-parse/sync"
 import { question } from "readline-sync"
 import { Transaction } from "./lib/transaction.js";
 import { Account } from "./lib/account.js";
 import { TransactionCsvData } from "./lib/transactionCsvData.js";
-import { parseDate, formatDate } from "./lib/dateHelper.js";
+import { parseDate, formatDate } from "./lib/dateService.js";
+import { parseCsv } from "./lib/csvService.js";
 
 function loadTransactions(filePath: string) {
     const data = readFileSync(filePath, "utf8");
-    const records: TransactionCsvData[] = parse(data, {columns: true, skip_empty_lines: true});
+    const records: TransactionCsvData[] = parseCsv(data);
     const transactions: Transaction[] = [];
     for (const row of records) {
         const date: Date = parseDate(row.Date);
@@ -70,6 +70,7 @@ function main(): void {
             const accountName: string = command.slice(5, command.length);
             displayTransactionsOfAccount(transactions, accountName);
         } else if (command.toLowerCase() == "exit") {
+            console.log("Exiting the program...");
             break;
         }
     }
