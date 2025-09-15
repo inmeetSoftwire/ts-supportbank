@@ -8,9 +8,17 @@
   },
   "author": "",
   "license": "ISC",
-  "description": "",
   "devDependencies": {
     "@types/node": "^24.3.1",
+    "@types/readline-sync": "^1.4.8",
     "typescript": "^5.9.2"
-  }
+  },
+  "type": "module",
+  "dependencies": {
+    "csv-parse": "^6.1.0",
+    "date-fns": "^4.1.0",
+    "readline-sync": "^1.4.10"
+  },
+  "keywords": [],
+  "description": ""
 }
