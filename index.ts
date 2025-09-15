@@ -40,6 +40,7 @@ function computeAccountBalances(transactions: Transaction[]) {
     }
     return accounts
 }
+
 function displayAccountBalances(accounts: Map<string, Account>): void {
     console.log("\n=== Account Balances ===");
     for (const account of accounts.values()) {
@@ -47,28 +48,27 @@ function displayAccountBalances(accounts: Map<string, Account>): void {
     }
 }
 
-function displayTransactionsOfAccount(transactions: Transaction[], accountName: string) {
-    console.log(`\n=== Transactions of ${accountName} ===`);
+function displayTransactionsOfAccount(account: Account): void {
+    console.log(`\n=== Transactions of ${account.name} ===`);
+    const transactions = account.transactions;
     for (const transaction of transactions) {
-        if (transaction.from == accountName || transaction.to == accountName) {
-            console.log(`${formatDate(transaction.date)} | From: ${transaction.from} | To: ${transaction.to} | ${transaction.narrative} | £${transaction.amount.toFixed(2)}`)
-        }
+        const formattedDate = formatDate(transaction.date);
+        const formattedAmount = transaction.amount.toFixed(2);
+        console.log(`${formattedDate} | From: ${transaction.from} | To: ${transaction.to} | ${transaction.narrative} | £${formattedAmount}`);
     }
 }
 
+
 function main(): void {
     const transactions: Transaction[] = loadTransactions('Transactions2014.csv')
-    let accounts: Map<string, Account> = new Map();
+    const accounts: Map<string, Account> = computeAccountBalances(transactions)
     while (true) {
         const command: string = question('Enter your command ("list all", "list [account]" or "exit"): ');
         if (command.toLowerCase() == "list all") {
-            if (accounts.size == 0) {
-                accounts = computeAccountBalances(transactions);
-            }
             displayAccountBalances(accounts);
         } else if (command.toLowerCase().startsWith("list ")) {
             const accountName: string = command.slice(5, command.length);
-            displayTransactionsOfAccount(transactions, accountName);
+            displayTransactionsOfAccount(accounts.get(accountName) ?? new Account(accountName));
         } else if (command.toLowerCase() == "exit") {
             console.log("Exiting the program...");
             break;
